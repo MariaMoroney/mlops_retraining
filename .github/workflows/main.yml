@@ -24,16 +24,16 @@ jobs:
         run:
           pip3 install -r requirements.txt
 
-#      - name: Download data
-#        run: python3 download_data.py
-#
-#      - name: Version the new data
-#        run: dvc add data/
-#
-#      - name: Push trained model to DVC
-#        run: dvc push data.dvc
-#        env:
-#          DVC_REMOTE: versioning
+      #      - name: Download data
+      #        run: python3 download_data.py
+      #
+      #      - name: Version the new data
+      #        run: dvc add data/
+      #
+      #      - name: Push trained model to DVC
+      #        run: dvc push data.dvc
+      #        env:
+      #          DVC_REMOTE: versioning
 
       - name: Execute the training model
         run: |
@@ -49,6 +49,18 @@ jobs:
           
           cml-send-comment report.md
 
+      # Agregar este paso para guardar los archivos para el siguiente job
+      - name: Save model files for Docker
+        uses: actions/upload-artifact@v2
+        with:
+          name: model-artifacts
+          path: |
+            metrics.txt
+            feature_importance.png
+            # Agrega aquí cualquier otro archivo que necesites incluir
+            # Por ejemplo: model.pkl
+            # data/processed/*.csv
+
   build_docker_image:
     needs: retraining_model
     runs-on: ubuntu-latest
@@ -56,6 +68,13 @@ jobs:
     steps:
       - name: Check the repo
         uses: actions/checkout@v2
+
+      # Agregar este paso para obtener los archivos del job anterior
+      - name: Download model artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: model-artifacts
+          path: ./
 
       - name: Login to dockerhub
         uses: docker/login-action@v2
