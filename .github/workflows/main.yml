@@ -74,4 +74,4 @@ jobs:
         run: docker build -t mariamoroney/mlops-class:mlops-retraining-dev .
 
       - name: Docker push to Dockerhub
-        run: docker push mariamoroney/mlops-class:mlops-retraining-dev .
+        run: docker push mariamoroney/mlops-class:mlops-retraining-dev
