@@ -15,7 +15,7 @@ jobs:
     env:
       repo_token: ${{ secrets.GITHUBTOKEN2 }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Upgrade pip
         run: pip install --upgrade pip
@@ -23,17 +23,6 @@ jobs:
       - name: Install requirements
         run:
           pip3 install -r requirements.txt
-
-      #      - name: Download data
-      #        run: python3 download_data.py
-      #
-      #      - name: Version the new data
-      #        run: dvc add data/
-      #
-      #      - name: Push trained model to DVC
-      #        run: dvc push data.dvc
-      #        env:
-      #          DVC_REMOTE: versioning
 
       - name: Execute the training model
         run: |
@@ -49,17 +38,14 @@ jobs:
           
           cml-send-comment report.md
 
-      # Agregar este paso para guardar los archivos para el siguiente job
+      # Actualizado a v3
       - name: Save model files for Docker
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: model-artifacts
           path: |
             metrics.txt
             feature_importance.png
-            # Agrega aquí cualquier otro archivo que necesites incluir
-            # Por ejemplo: model.pkl
-            # data/processed/*.csv
 
   build_docker_image:
     needs: retraining_model
@@ -67,11 +53,11 @@ jobs:
 
     steps:
       - name: Check the repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      # Agregar este paso para obtener los archivos del job anterior
+      # Actualizado a v3
       - name: Download model artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: model-artifacts
           path: ./
